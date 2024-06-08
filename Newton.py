@@ -5,7 +5,7 @@ from sympy.plotting import plot_implicit
 import copy
 
 
-def evalf_callable(el): return el.evalf(n=5)
+def evalf_callable(el): return el.evalf()
 
 
 sym_list = [x, y]
@@ -21,7 +21,7 @@ def det_2x2(matrix: list) -> float:
     return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
 
 
-def cycle(f1, f2, df1_div_dx1, df1_div_dx2, df2_div_dx1, df2_div_dx2, sym_list, start_approx, e):
+def cycle(f1, f2, df1_div_dx1, df1_div_dx2, df2_div_dx1, df2_div_dx2, sym_list: list, start_approx: list, e: float, maxIter: int = 1000):
 
     xs = start_approx
     k = 0
@@ -35,17 +35,17 @@ def cycle(f1, f2, df1_div_dx1, df1_div_dx2, df2_div_dx1, df2_div_dx2, sym_list, 
     detA2 = det_2x2(subst_matrix(A2, xs))
     detJ = det_2x2(subst_matrix(J, xs))
 
-    oldSubs = dict(zip(sym_list, xs))
-    print("".ljust(40, "_"))
-    print(f"iteration: 0\nx1 = {xs[0]}\nx2 = {xs[1]}\n\n")
-    print(
-        f"f1 = {f1.subs(oldSubs).evalf(n=5)}\nf2 = {f2.subs(oldSubs).evalf(n=5)}\n\n")
-    print(
-        f"df1/dx1 = {df1_div_dx1.subs(oldSubs).evalf(n=5).evalf(n=5)}\ndf2/dx1 = {df2_div_dx1.subs(oldSubs).evalf(n=5)}\n\n")
-    print(
-        f"df1/dx2 = {df1_div_dx2.subs(oldSubs).evalf(n=5)}\ndf2/dx2 = {df2_div_dx2.subs(oldSubs).evalf(n=5)}\n\n")
-    print(f"detA1 = {detA1}\ndetA2 = {detA2}\n")
-    print(f"detJ = {detJ}\n")
+    # oldSubs = dict(zip(sym_list, xs))
+    # print("".ljust(40, "_"))
+    # print(f"iteration: 0\nx1 = {xs[0]}\nx2 = {xs[1]}\n\n")
+    # print(
+    #     f"f1 = {f1.subs(oldSubs).evalf(n=5)}\nf2 = {f2.subs(oldSubs).evalf(n=5)}\n\n")
+    # print(
+    #     f"df1/dx1 = {df1_div_dx1.subs(oldSubs).evalf(n=5).evalf(n=5)}\ndf2/dx1 = {df2_div_dx1.subs(oldSubs).evalf(n=5)}\n\n")
+    # print(
+    #     f"df1/dx2 = {df1_div_dx2.subs(oldSubs).evalf(n=5)}\ndf2/dx2 = {df2_div_dx2.subs(oldSubs).evalf(n=5)}\n\n")
+    # print(f"detA1 = {detA1}\ndetA2 = {detA2}\n")
+    # print(f"detJ = {detJ}\n")
     while True:
         xsN.append(xs[0]-(detA1/detJ))
         xsN.append(xs[1]-(detA2/detJ))
@@ -57,29 +57,33 @@ def cycle(f1, f2, df1_div_dx1, df1_div_dx2, df2_div_dx1, df2_div_dx2, sym_list, 
                 maxError = error
 
         if maxError <= e:
-            print("    End:")
-            print(xsN)
-            return xsN
+            # print("    End:")
+            # print(xsN)
+            return xsN, k
 
         k += 1
         detA1 = det_2x2(subst_matrix(A1, xsN))
         detA2 = det_2x2(subst_matrix(A2, xsN))
         detJ = det_2x2(subst_matrix(J, xsN))
 
-        newSubs = dict(zip(sym_list, xsN))
-        print("".ljust(40, "_"))
-        print(f"iteration: {k}\nx1 = {xsN[0]}\nx2 = {xsN[1]}\n\n")
-        print(
-            f"f1 = {f1.subs(newSubs).evalf(n=5)}\nf2 = {f2.subs(newSubs).evalf(n=5)}\n\n")
-        print(
-            f"df1/dx1 = {df1_div_dx1.subs(newSubs).evalf(n=5)}\ndf2/dx1 = {df2_div_dx1.subs(newSubs).evalf(n=5)}\n\n")
-        print(
-            f"df1/dx2 = {df1_div_dx2.subs(newSubs).evalf(n=5)}\ndf2/dx2 = {df2_div_dx2.subs(newSubs).evalf(n=5)}\n\n")
-        print(f"detA1 = {detA1}\ndetA2 = {detA2}\n\n")
-        print(f"detJ = {detJ}\n\n\n")
+        # newSubs = dict(zip(sym_list, xsN))
+        # print("".ljust(40, "_"))
+        # print(f"iteration: {k}\nx1 = {xsN[0]}\nx2 = {xsN[1]}\n\n")
+        # print(
+        #     f"f1 = {f1.subs(newSubs).evalf(n=5)}\nf2 = {f2.subs(newSubs).evalf(n=5)}\n\n")
+        # print(
+        #     f"df1/dx1 = {df1_div_dx1.subs(newSubs).evalf(n=5)}\ndf2/dx1 = {df2_div_dx1.subs(newSubs).evalf(n=5)}\n\n")
+        # print(
+        #     f"df1/dx2 = {df1_div_dx2.subs(newSubs).evalf(n=5)}\ndf2/dx2 = {df2_div_dx2.subs(newSubs).evalf(n=5)}\n\n")
+        # print(f"detA1 = {detA1}\ndetA2 = {detA2}\n\n")
+        # print(f"detJ = {detJ}\n\n\n")
 
         xs = xsN
         xsN = []
+
+        if (k >= maxIter):
+            raise TimeoutError(
+                "Кількість ітерацій перевищує максимальну дозволену.")
 
 
 if __name__ == "__main__":
